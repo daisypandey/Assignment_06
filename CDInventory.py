@@ -5,7 +5,10 @@
 # Daisy Pandey, August 16, 2020, Modifying CD Inventory Program script
 # Daisy Pandey, August 16, 2020, Added code, added new functions, moved existing code to those functions
 # Daisy Pandey, August 17, 2020, Added docstrings for add_data, del_data, and write_file functions, modified/added comments
+# Daisy Pandey, August 19, 2020, Added get_UserInput function and docstring, added code to check if file exists
 #------------------------------------------#
+
+import os.path
 
 # -- DATA -- #
 strChoice = '' # User input
@@ -19,20 +22,18 @@ class DataProcessor:
     """Adding CD data to the inventory and deleting CD data from inventory"""
     
     @staticmethod 
-    def add_data():
-        """Function to add data to the 2D table (list of dictionaries) each time the user wants to add data
+    def add_data(strID, strTitle, stArtist, table):
+        """Function to add data to the 2D table (list of dictionaries) 
        
         Args: 
-            None.
-        
+            StrID (string): Input parameter for CD ID. 
+            Strtitle (string): Input parameter for CD Title.
+            StArtist (string): Input parameter for CD Artist.
+            table (list of dict): 2D data structure (list of dicts) that holds the data during runtime
+            
         Returns: 
             None.
-        """
-       # Ask user for new ID, CD Title and Artist
-        strID = input('Enter ID: ').strip()
-        strTitle = input('What is the CD\'s title? ').strip()
-        stArtist = input('What is the Artist\'s name? ').strip()
-        
+        """        
        # Add item to the table
         intID = int(strID)
         dicRow = {'ID': intID, 'Title': strTitle, 'Artist': stArtist}
@@ -165,7 +166,30 @@ class IO:
         for row in table:
             print('{}\t{} (by:{})'.format(*row.values()))
         print('======================================')
-          
+        
+    @staticmethod
+    def get_userInput():
+        """Function to get user input for ID, CD title, and CD artist
+        
+        Args:
+            None.
+            
+        Returns:
+            StrID (string): Input for CD ID. 
+            Strtitle (string): Input for CD Title.
+            StArtist (string): Input for CD Artist.
+        """
+        # Ask user for new ID, CD Title and Artist
+        strID = input('Enter ID: ').strip()
+        strTitle = input('What is the CD\'s title? ').strip()
+        stArtist = input('What is the Artist\'s name? ').strip()
+        return strID, strTitle, stArtist    
+
+# If file does not exist in currrent folder, Create one
+if not os.path.exists(strFileName):
+    newfile = open(strFileName, 'a')
+    newfile.close()
+    
 # When program starts, read in the currently saved Inventory
 FileProcessor.read_file(strFileName, lstTbl)
 
@@ -195,7 +219,10 @@ while True:
     
     # Process add a CD
     elif strChoice == 'a':
-        DataProcessor.add_data() # Adds data to the 2D table (list of dictionaries)
+        # Store user inputs
+        userInputId, userInputTitle, userInputArtist = IO.get_userInput()
+        # Adds data to the 2D table (list of dictionaries)
+        dicRow = DataProcessor.add_data(userInputId, userInputTitle, userInputArtist, lstTbl)       
         IO.show_inventory(lstTbl) 
         continue  # start loop back at top.
     
